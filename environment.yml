@@ -9,4 +9,8 @@ dependencies:
   - pip
   - pip:
     - python-dotenv
-    - -e .
+    - deep-translator
+    - pandas
+    - numpy
+    - fastapi 
+    - uvicorn

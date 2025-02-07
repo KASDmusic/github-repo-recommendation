@@ -12,8 +12,6 @@ app = FastAPI()
 # Route GET avec paramètre
 @app.get("/description_to_vec/")
 def description_to_vec(description: str):
-
-    print(description)
     """
     Transform a description into a vector representation.
     With doing preprocessing and translation.
@@ -35,6 +33,7 @@ def description_to_vec(description: str):
     # Retourne le vecteur moyen des mots
     return nlp(' '.join(tokens)).vector.tolist()
 
+"""
 if __name__ == "__main__":
     # Exemple d'utilisation
 
@@ -59,3 +58,4 @@ if __name__ == "__main__":
 
     similarity_3 = np.dot(vec_2, vec_4) / (np.linalg.norm(vec_2) * np.linalg.norm(vec_4))
     print(similarity_3)
+"""

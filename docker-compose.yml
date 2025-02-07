@@ -1,0 +1,29 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false  # Désactive la sécurité pour simplifier
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g   # Configuration mémoire
+    ports:
+      - "9201:9200"
+      - "9301:9300"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    restart: unless-stopped  # Redémarre automatiquement sauf si manuellement arrêté
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.0
+    container_name: kibana
+    depends_on:
+      - elasticsearch  # S'assure qu'Elasticsearch démarre avant Kibana
+    ports:
+      - "5602:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9201
+    restart: unless-stopped
+
+volumes:
+  es_data:
+    driver: local

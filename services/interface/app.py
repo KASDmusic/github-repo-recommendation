@@ -2,14 +2,13 @@ import streamlit as st
 import requests
 import time
 
-def fetch_recommended_repos(username):
-    """Simule ou récupère des recommandations de repositories pour un utilisateur donné."""
-    recommended_repos = [
-        {"name": "awesome-python", "description": "A curated list of awesome Python frameworks and libraries.", "url": "https://github.com/vinta/awesome-python"},
-        {"name": "react", "description": "A declarative, efficient, and flexible JavaScript library for building user interfaces.", "url": "https://github.com/facebook/react"},
-        {"name": "tensorflow", "description": "An open source machine learning framework for everyone.", "url": "https://github.com/tensorflow/tensorflow"},
-    ]
-    return recommended_repos
+def fetch_recommended_repos(username, n):
+    # Appel de l'API FastAPI
+    response = requests.get(f"http://api_nlp:8000/user_recommandation/?user={username}&n={n}")
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return []
 
 def change_feedback(repo_name, rating):
     # récupérer la valeur de l'évaluation grâce à key

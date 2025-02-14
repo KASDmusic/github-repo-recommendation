@@ -1,4 +1,9 @@
+networks:
+  mon_reseau:
+    driver: bridge
+
 services:
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
     container_name: elasticsearch
@@ -22,7 +27,28 @@ services:
       - "5602:5601"
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9201
+    restart: unless-stopped	
+    
+  api_nlp:
+    build: ./services/api_nlp
+    container_name: api_nlp
+    ports:
+      - "8000:8000"
+    networks:
+      - mon_reseau
     restart: unless-stopped
+
+  interface:
+    build: ./services/interface 
+    container_name: interface
+    depends_on:
+      - api_nlp
+    ports:
+      - "8501:8501"
+    networks:
+      - mon_reseau
+    restart: unless-stopped
+
 
 volumes:
   es_data:

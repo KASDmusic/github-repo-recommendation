@@ -1,6 +1,6 @@
 import requests
 
-ELASTIC_URL = "http://localhost:9200"
+ELASTIC_URL = "http://localhost:9201"
 HEADERS = {"Content-Type": "application/json"}
 
 # Exemple d'index vectoriel

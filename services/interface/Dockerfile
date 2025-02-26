@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Définir le répertoire de travail dans le conteneur
-WORKDIR /app
+WORKDIR /github-repo-recommendation
 
 # Copier les fichiers nécessaires dans le conteneur
 COPY requirements.txt ./

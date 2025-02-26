@@ -11,20 +11,54 @@ services:
       - "9301:9300"
     volumes:
       - es_data:/usr/share/elasticsearch/data
-      - donnée:/github-repo-recommandation/data
+      - shared_data:/github-repo-recommendation/services/git_api  
     restart: unless-stopped  # Redémarre automatiquement sauf si manuellement arrêté
+    networks:
+      - esnet
+
+  api_bdd:
+    build:
+      context: ./services/api_bdd
+      dockerfile: Dockerfile
+    container_name: api_bdd
+    depends_on:
+      - elasticsearch
+      - git_api
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+      - shared_data:/github-repo-recommendation/services/git_api
+    networks:
+      - esnet
+
+  git_api:
+    build:
+      context: ./services/git_api
+      dockerfile: Dockerfile
+    container_name: git_api
+    depends_on:
+      - elasticsearch
+    volumes:
+      - shared_data:/github-repo-recommendation/services/git_api 
+    networks:
+      - esnet
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.17.0
     container_name: kibana
     depends_on:
-      - elasticsearch  # S'assure qu'Elasticsearch démarre avant Kibana
+      - elasticsearch
     ports:
       - "5602:5601"
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9201
+      - ELASTICSEARCH_HOSTS=http://localhost:9201
     restart: unless-stopped
+
+networks:
+  esnet:
+    driver: bridge
 
 volumes:
   es_data:
+    driver: local
+  shared_data:
     driver: local

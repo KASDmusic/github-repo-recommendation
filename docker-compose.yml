@@ -27,6 +27,7 @@ services:
     volumes:
       - es_data:/usr/share/elasticsearch/data
       - shared_data:/github-repo-recommendation/services/git_api
+      - ./data/processed/github_repos.json:/app/data/processed/github_repos.json
     networks:
       - esnet
 

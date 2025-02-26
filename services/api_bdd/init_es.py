@@ -65,8 +65,11 @@ if __name__ == "__main__":
     create_index("github_repositories")
     
     # Load JSON data
-    json_file_path = '/github-repo-recommendation/services/git_api/github_repos_py.json'
+    
+    json_file_path = '../app/data/processed/github_repos.json'
     with open(json_file_path, 'r') as file:
         data = json.load(file)
+
+
     
     insert_data("github_repositories", data)

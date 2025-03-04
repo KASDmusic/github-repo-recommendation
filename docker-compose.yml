@@ -16,7 +16,10 @@ services:
       - "9301:9300"
     volumes:
       - es_data:/usr/share/elasticsearch/data
+      - ./data/processed/github_repos.json:/app/data/processed/github_repos.json
     restart: unless-stopped  # Redémarre automatiquement sauf si manuellement arrêté
+    networks:
+      - mon_reseau
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.17.0
@@ -26,8 +29,8 @@ services:
     ports:
       - "5602:5601"
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9201
-    restart: unless-stopped	
+      - ELASTICSEARCH_HOSTS=http://localhost:9201
+    restart: unless-stopped
     
   api_nlp:
     build: ./services/api_nlp
@@ -36,12 +39,15 @@ services:
       - "8000:8000"
     networks:
       - mon_reseau
+    depends_on:
+      - elasticsearch
     restart: unless-stopped
 
   interface:
     build: ./services/interface 
     container_name: interface
     depends_on:
+      - elasticsearch
       - api_nlp
     ports:
       - "8501:8501"
@@ -49,6 +55,18 @@ services:
       - mon_reseau
     restart: unless-stopped
 
+  api_bdd:
+    build:
+      context: ./services/api_bdd
+      dockerfile: Dockerfile
+    container_name: api_bdd
+    depends_on:
+      - elasticsearch
+      - api_nlp
+    volumes:
+      - ./data/processed/github_repos.json:/app/data/processed/github_repos.json
+    networks:
+      - mon_reseau
 
 volumes:
   es_data:

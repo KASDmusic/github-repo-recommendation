@@ -1,12 +1,17 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+import numpy as np
+import spacy
+from deep_translator import GoogleTranslator
+from spacy.lang.fr.stop_words import STOP_WORDS 
+
 # Initialisation de l'application FastAPI
 app = FastAPI()
 
-def init():
-
-    print("lancement de l'api")
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
 
 # Route GET avec paramètre
 @app.get("/user_recommandation/")
@@ -23,9 +28,26 @@ def user_recommandation(user: str, n: int):
 def mark_repo_recommandation(user: str, repo_link: str, mark: int):
     pass
 
+# Route GET avec paramètre
+@app.get("/description_to_vec/")
+def description_to_vec(description: str):
+    """
+    Transform a description into a vector representation.
+    With doing preprocessing and translation.
+    """
 
+    nlp = spacy.load('en_core_web_lg')
 
-init()
+    # Traduis en anglais
+    description_en = GoogleTranslator(source='auto', target='en').translate(description)
 
+    description_en_nlp = nlp(description_en)
 
+    # Tokenisation, suppression des mots vides et de la ponctuation
+    tokens = [token.lemma_.lower() for token in description_en_nlp 
+              if token.text not in STOP_WORDS 
+              and not token.is_punct 
+              and not token.is_space]
 
+    # Retourne le vecteur moyen des mots
+    return nlp(' '.join(tokens)).vector.tolist()

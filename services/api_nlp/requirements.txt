@@ -1,0 +1,8 @@
+flask
+transformers
+torch
+numpy
+spacy
+deep_translator
+fastapi
+uvicorn

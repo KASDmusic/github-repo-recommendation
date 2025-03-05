@@ -17,7 +17,7 @@ services:
     volumes:
       - es_data:/usr/share/elasticsearch/data
       - ./data/processed/github_repos.json:/app/data/processed/github_repos.json
-      - ./data/processed/github_repos_cleaned.json:/app/data/processed/github_repos_cleaned.json
+      - ./data/processed/github_repos_cleaned.json:/app/data/processed/github_repos_with_embeddings.json
     restart: unless-stopped  # Redémarre automatiquement sauf si manuellement arrêté
     networks:
       - mon_reseau
@@ -30,7 +30,7 @@ services:
     ports:
       - "5602:5601"
     environment:
-      - ELASTICSEARCH_HOSTS=http://localhost:9201
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9201
     restart: unless-stopped
     
   api_nlp:
@@ -67,7 +67,7 @@ services:
       - api_nlp
     volumes:
       - ./data/processed/github_repos.json:/app/data/processed/github_repos.json
-      - ./data/processed/github_repos_cleaned.json:/app/data/processed/github_repos_cleaned.json
+      - ./data/processed/github_repos_cleaned.json:/app/data/processed/github_repos_with_embeddings.json
     ports:
       - "2100:2100"
     networks:
@@ -77,7 +77,7 @@ services:
     build: ./services/api_github
     container_name: api_github
     ports:
-      - "8001:8000"
+      - "8001:8001"
     networks:
       - mon_reseau
     restart: unless-stopped

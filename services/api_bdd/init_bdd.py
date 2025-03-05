@@ -2,12 +2,11 @@ import json
 import requests
 import time
 import logging
-
+import math  # Pour gérer math.isnan
 
 # Configuration
 ELASTIC_URL = "http://elasticsearch:9200"
 HEADERS = {"Content-Type": "application/json"}
-
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
@@ -44,6 +43,8 @@ index_mapping = {
 
 class ElasticManager:
     """Gère les opérations sur Elasticsearch."""
+    # Initialisation d'un compteur pour l'id des documents
+    indice_repos = 0
 
     @staticmethod
     def create_index(index_name: str):
@@ -55,74 +56,81 @@ class ElasticManager:
         response = requests.delete(f"{ELASTIC_URL}/{index_name}")
         return response.json()
 
-
     @staticmethod
     def insert_data(index_name: str, json_file_path: str, chunk_size: int = 100):
-        """Insère uniquement les repositories contenant un embedding dans Elasticsearch."""
-
+        """Insère les repositories avec un identifiant personnalisé dans Elasticsearch."""
         logging.info("Début de l'insertion des données.")
-        
-        # Ouvrir le fichier JSON en mode lecture
-        with open(json_file_path, 'r') as file:
-            count = 0  # Compteur de repositories insérés
-            chunk = []  # Liste pour stocker temporairement un chunk de repositories
 
-            for line in file:
-                try:
-                    # Chaque ligne est supposée être un objet JSON
-                    repo = json.loads(line.strip())  # Charger chaque ligne comme un objet JSON
-                    
-                    # Vérifier si l'embedding est présent et non vide
-                    if "repository_vector" in repo:
-                        repo_vector = repo["repository_vector"]
-                        
-                        # Vérifier si 'repository_vector' est un itérable (liste ou dictionnaire) et non vide
-                        if isinstance(repo_vector, (list, dict)) and repo_vector:
-                            chunk.append(repo)  # Ajouter au chunk
-                        # Si c'est un float (ou autre type non itérable), on peut le traiter différemment (en fonction de votre logique)
-                        elif isinstance(repo_vector, float) and not repo_vector.is_nan():
-                            # Gérer les cas où repository_vector est un float (si besoin de logique spécifique ici)
-                            logging.warning(f"{repo['full_name']} a un embedding de type float.")
-                        else:
-                            logging.warning(f"{repo['full_name']} n'a pas de repository_vector valide ou vide.")
-                        
-                        # Si le chunk atteint la taille désirée, on l'envoie dans Elasticsearch
-                        if len(chunk) == chunk_size:
-                            # Envoi du chunk à Elasticsearch
-                            for repo_to_insert in chunk:
-                                res = requests.post(f"{ELASTIC_URL}/{index_name}/_doc", json=repo_to_insert, headers=HEADERS)
-                                if res.status_code == 201:  # Si l'insertion a réussi
-                                    logging.info(f"{res.status_code} - {repo_to_insert['full_name']} inséré.")
-                                else:
-                                    logging.error(f"Erreur lors de l'insertion de {repo_to_insert['full_name']} : {res.text}")
-                            count += len(chunk)  # Incrémenter le compteur avec la taille du chunk
-                            chunk = []  # Réinitialiser le chunk pour le prochain ensemble de données
+        try:
+            with open(json_file_path, 'r') as file:
+                data = json.load(file)
+        except json.JSONDecodeError as e:
+            logging.error(f"Erreur lors du chargement du fichier JSON: {e}")
+            return
 
-                except json.JSONDecodeError as e:
-                    logging.error(f"Erreur lors de la lecture de la ligne JSON: {e}")
-                    continue  # Passer à la ligne suivante en cas d'erreur
+        count = 0
+        chunk = []
 
-            # Traiter le dernier chunk restant (s'il y en a un)
-            if chunk:
-                for repo_to_insert in chunk:
-                    res = requests.post(f"{ELASTIC_URL}/{index_name}/_doc", json=repo_to_insert, headers=HEADERS)
-                    if res.status_code == 201:  # Si l'insertion a réussi
-                        logging.info(f"{res.status_code} - {repo_to_insert['full_name']} inséré.")
+        for repo in data:
+            if "repository_vector" in repo:
+                repo_vector = repo["repository_vector"]
+                if isinstance(repo_vector, (list, dict)) and repo_vector:
+                    chunk.append(repo)
+                elif isinstance(repo_vector, float) and not math.isnan(repo_vector):
+                    logging.warning(f"{repo.get('full_name', 'Unknown')} a un embedding de type float.")
+                else:
+                    logging.warning(f"{repo.get('full_name', 'Unknown')} n'a pas de repository_vector valide ou est vide.")
+
+            if len(chunk) == chunk_size:
+                for doc in chunk:
+                    # Utiliser PUT pour définir un id personnalisé
+                    doc_id = ElasticManager.indice_repos
+                    response = requests.put(f"{ELASTIC_URL}/{index_name}/_doc/{doc_id}", json=doc, headers=HEADERS)
+                    if response.status_code in (200, 201):
+                        logging.info(f"{response.status_code} - {doc['full_name']} inséré avec l'id {doc_id}.")
                     else:
-                        logging.error(f"Erreur lors de l'insertion de {repo_to_insert['full_name']} : {res.text}")
-                count += len(chunk)  # Incrémenter le compteur avec la taille du dernier chunk
+                        logging.error(f"Erreur lors de l'insertion de {doc['full_name']} : {response.text}")
+                    ElasticManager.indice_repos += 1
+                count += len(chunk)
+                chunk = []
 
-            logging.info(f"{count} repositories insérés au total.")
-        
+        if chunk:
+            for doc in chunk:
+                doc_id = ElasticManager.indice_repos
+                response = requests.put(f"{ELASTIC_URL}/{index_name}/_doc/{doc_id}", json=doc, headers=HEADERS)
+                if response.status_code in (200, 201):
+                    logging.info(f"{response.status_code} - {doc['full_name']} inséré avec l'id {doc_id}.")
+                else:
+                    logging.error(f"Erreur lors de l'insertion de {doc['full_name']} : {response.text}")
+                ElasticManager.indice_repos += 1
+            count += len(chunk)
+
+        logging.info(f"{count} repositories insérés au total.")
         logging.info("Traitement terminé.")
 
+    @staticmethod
+    def get_all_embeddings():
+        """Récupérer tous les embeddings depuis Elasticsearch."""
+        query = {
+            "query": {
+                "match_all": {}
+            },
+            "_source": ["repository_vector", "full_name"],  # Champs à récupérer
+            "size": 10000  # Ajustez la taille si nécessaire
+        }
+        res = requests.get(f"{ELASTIC_URL}/github_repositories/_search", json=query, headers=HEADERS)
+        
+        if res.status_code == 200:
+            return res.json()['hits']['hits']
+        else:
+            raise Exception(f"Erreur lors de la récupération des embeddings: {res.text}")
 
 
 
 if __name__ == "__main__":
-    # Attendre que Elasticsearch soit prêt
-    time.sleep(60)
+    time.sleep(10)  # Attendre que Elasticsearch soit prêt
+    #ElasticManager.create_index("github_repositories")
+    #ElasticManager.insert_data("github_repositories", "../app/data/processed/github_repos_with_embeddings.json")
 
-    ElasticManager.create_index("github_repositories")
-    ElasticManager.insert_data("github_repositories", "../app/data/processed/github_repos_cleaned.json")
     print("ça marche")
+    

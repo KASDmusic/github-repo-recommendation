@@ -1,6 +1,6 @@
 .vscode
 
-/data/processed/updated_repository.json
+/data/processed/github_repos_cleaned.json
 
 # Mac OS-specific storage files
 .DS_Store

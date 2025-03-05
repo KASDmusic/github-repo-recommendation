@@ -124,4 +124,5 @@ if __name__ == "__main__":
     time.sleep(60)
 
     ElasticManager.create_index("github_repositories")
+    ElasticManager.insert_data("github_repositories", "../app/data/processed/github_repos_cleaned.json")
     print("ça marche")

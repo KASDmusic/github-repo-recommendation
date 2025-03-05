@@ -17,7 +17,7 @@ services:
     volumes:
       - es_data:/usr/share/elasticsearch/data
       - ./data/processed/github_repos.json:/app/data/processed/github_repos.json
-      - ./data/processed/updated_repository.json:/app/data/processed/updated_repository.json
+      - ./data/processed/github_repos_cleaned.json:/app/data/processed/github_repos_cleaned.json
     restart: unless-stopped  # Redémarre automatiquement sauf si manuellement arrêté
     networks:
       - mon_reseau
@@ -76,7 +76,7 @@ services:
       - api_nlp
     volumes:
       - ./data/processed/github_repos.json:/app/data/processed/github_repos.json
-      - ./data/processed/updated_repository.json:/app/data/processed/updated_repository.json
+      - ./data/processed/github_repos_cleaned.json:/app/data/processed/github_repos_cleaned.json
     ports:
       - "2100:2100"
     networks:

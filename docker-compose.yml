@@ -10,13 +10,14 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false  # Désactive la sécurité pour simplifier
-      - ES_JAVA_OPTS=-Xms2g -Xmx2g   # Configuration mémoire
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g  # Allouer 2 Go de mémoire à Elasticsearch
     ports:
       - "9201:9200"
       - "9301:9300"
     volumes:
       - es_data:/usr/share/elasticsearch/data
       - ./data/processed/github_repos.json:/app/data/processed/github_repos.json
+      - ./data/processed/updated_repository.json:/app/data/processed/updated_repository.json
     restart: unless-stopped  # Redémarre automatiquement sauf si manuellement arrêté
     networks:
       - mon_reseau
@@ -65,6 +66,9 @@ services:
       - api_nlp
     volumes:
       - ./data/processed/github_repos.json:/app/data/processed/github_repos.json
+      - ./data/processed/updated_repository.json:/app/data/processed/updated_repository.json
+    ports:
+      - "2100:2100"
     networks:
       - mon_reseau
 

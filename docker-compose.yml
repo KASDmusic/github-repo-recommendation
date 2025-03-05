@@ -42,13 +42,13 @@ services:
       - mon_reseau
     depends_on:
       - elasticsearch
+      - postgres
     restart: unless-stopped
 
   interface:
     build: ./services/interface 
     container_name: interface
     depends_on:
-      - elasticsearch
       - api_nlp
     ports:
       - "8501:8501"
@@ -72,6 +72,24 @@ services:
     networks:
       - mon_reseau
 
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./services/postgresql_db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - mon_reseau
+
 volumes:
   es_data:
+    driver: local
+  pg_data:
     driver: local

@@ -5,6 +5,11 @@ from init_bdd import ElasticManager
 # Initialisation de FastAPI
 app = FastAPI()
 
+@app.get("/")
+def read_root():
+    """Racine de l'API."""
+    return {"Hello": "World"}
+
 @app.post("/create_index/{index_name}")
 def create_index(index_name: str):
     """Créer un index Elasticsearch."""

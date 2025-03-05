@@ -15,6 +15,10 @@ else:
 
 app = FastAPI()
 
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+
 class RepoData(BaseModel):
     full_name: str
     html_url: str

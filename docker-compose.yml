@@ -26,7 +26,7 @@ services:
     image: docker.elastic.co/kibana/kibana:8.17.0
     container_name: kibana
     depends_on:
-      - elasticsearch  # S'assure qu'Elasticsearch démarre avant Kibana
+      - elasticsearch 
     ports:
       - "5602:5601"
     environment:
@@ -43,15 +43,7 @@ services:
     depends_on:
       - elasticsearch
       - postgres
-    restart: unless-stopped
-
-  api_github:
-    build: ./services/api_github
-    container_name: api_github
-    ports:
-      - "8001:8001"
-    networks:
-      - mon_reseau
+      - api_github
     restart: unless-stopped
 
   interface:
@@ -80,6 +72,15 @@ services:
       - "2100:2100"
     networks:
       - mon_reseau
+
+  api_github:
+    build: ./services/api_github
+    container_name: api_github
+    ports:
+      - "8001:8000"
+    networks:
+      - mon_reseau
+    restart: unless-stopped
 
   postgres:
     image: postgres:15

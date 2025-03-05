@@ -17,6 +17,9 @@ COPY requirements.txt ./
 # Installer les dépendances Python
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Télécharger le modèle de langue en anglais de Spacy
+RUN python -m spacy download en_core_web_lg
+
 # Copier le reste des fichiers de l'application
 COPY . .
 

@@ -1,5 +1,7 @@
 .vscode
 
+/data/processed/updated_repository.json
+
 # Mac OS-specific storage files
 .DS_Store
 

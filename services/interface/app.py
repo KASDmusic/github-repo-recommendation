@@ -10,18 +10,36 @@ def fetch_recommended_repos(username, n):
     else:
         return []
 
-def change_feedback(repo_name, rating):
+def change_feedback(user_id: int, repo_link: str, rating: int):
     # récupérer la valeur de l'évaluation grâce à key
-    print(f"Feedback changed to {rating} stars.")   
+    print(f"Feedback changed to {rating} stars.")
 
-def render_feedback(repo_name):
+    if user_id is None:
+        json_data = {
+            "repo_link": repo_link,
+            "rating": rating
+        }
+    else:
+        json_data = {
+            "user_id": user_id,
+            "repo_link": repo_link,
+            "rating": rating
+        }
+
+    # Appel de l'API FastAPI
+    requests.post("http://api_nlp:8000/change_feedback/", json=json_data)
+
+
+def render_feedback(repo_url):
     """Affiche un système de feedback par étoiles interactif."""
-    st.write(f"Évaluez le repository '{repo_name}':")
+    st.write(f"Évaluez le repository '{repo_url}':")
     if not 'rating' in locals():
         rating = None
-    rating = st.feedback(options="stars", key=f"feedback_{repo_name}", on_change=change_feedback, args=(repo_name, rating))
+    rating = st.feedback(options="stars", key=f"feedback_{repo_url}")
     if rating is not None:
-        st.write(f"Vous avez donné une note de {rating + 1} étoile(s) pour '{repo_name}'.")
+        rating += 1
+        st.write(f"Vous avez donné une note de {rating} étoile(s) pour '{repo_url}'.")
+        change_feedback(user_id=1, repo_link=repo_url, rating=rating)
     return rating
 
 st.set_page_config(page_title="GitHub Repo Recommendation", page_icon="./static/github_repo_recommendation.png")
@@ -54,7 +72,7 @@ if st.button("🔍 Obtenir des recommandations"):
     if username:
         with st.spinner("*Recherche des recommandations...*"):
             try:
-                st.session_state['repos'] = fetch_recommended_repos(username)
+                st.session_state['repos'] = fetch_recommended_repos(username, number)
                 if st.session_state['repos']:
                     st.success(f"Voici des recommandations pour l'utilisateur **{username}**:")
                 else:
@@ -68,7 +86,7 @@ if st.session_state['repos']:
     for repo in st.session_state['repos']:
         st.markdown(f"<h4><a href='{repo['url']}' target='_blank' style='text-decoration: none; color: #1E90FF;'>{repo['name']}</a></h4>", unsafe_allow_html=True)
         st.markdown(f"<p style='color: #555;'>{repo['description']}</p>", unsafe_allow_html=True)
-        render_feedback(repo['name'])
+        render_feedback(repo['url'])
         st.markdown("---")
 
 st.markdown("""

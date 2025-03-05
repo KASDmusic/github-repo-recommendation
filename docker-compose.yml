@@ -38,6 +38,16 @@ services:
       - mon_reseau
     restart: unless-stopped
 
+  api_github:
+    build: ./services/api_github
+    container_name: api_github
+    
+    ports:
+      - "8000:8000"
+    networks:
+      - mon_reseau
+    restart: unless-stopped
+
   interface:
     build: ./services/interface 
     container_name: interface

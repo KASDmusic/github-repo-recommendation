@@ -4,7 +4,10 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
-A short description of the project.
+Le projet consiste en une recommandation de repositories Github en fonction des stars d'un utilisateurs.
+Le principe consiste à soumettre un nom d'utilisateur et un nombre de recommandation a l'interface.
+Elle renvoie, dans l'ordre de pertinence, le nombre de repositories demandés.
+Un système de notation des recommandation est présente pour chaque repository, cela permet à court terme d'évaluer la pertinence des recommandations et permettra à long terme de développer des système de recommandation collaboratif.
 
 ## Project Organization
 

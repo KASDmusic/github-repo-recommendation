@@ -126,7 +126,7 @@ class ElasticManager:
             raise Exception(f"Erreur lors de la récupération des embeddings: {res.text}")
 
 if __name__ == "__main__":
-    time.sleep(60)  # Attendre que Elasticsearch soit prêt
+    time.sleep(45)  # Attendre que Elasticsearch soit prêt
     #ElasticManager.create_index("github_repositories")
 
     #Liste de tous vos fichiers JSON

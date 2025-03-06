@@ -46,15 +46,15 @@ def insert_data(index_name: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def search_similar_documents(es: Elasticsearch, index_name: str, query_vector: List[float], k: int = 5) -> Dict[str, float]:
+def search_similar_documents(es: Elasticsearch, index_name: str, query_vector: List[float], k: int = 5) -> List[Dict]:
     """
     Recherche les k documents les plus similaires à un embedding donné dans Elasticsearch.
-    
+
     :param es: Instance de connexion à Elasticsearch.
     :param index_name: Nom de l'index Elasticsearch.
     :param query_vector: Vecteur de requête pour la recherche de similarité.
     :param k: Nombre de documents les plus proches à retourner.
-    :return: Dictionnaire avec les documents et leur score de similarité.
+    :return: Liste de dictionnaires contenant les champs du document et le score de similarité.
     """
     query = {
         "size": k,
@@ -68,14 +68,17 @@ def search_similar_documents(es: Elasticsearch, index_name: str, query_vector: L
             }
         }
     }
-    
+
     response = es.search(index=index_name, body=query)
-    
-    results = {
-        hit["_source"]["full_name"]: hit["_score"]
+
+    results = [
+        {
+            "score": hit["_score"],
+            **hit["_source"]  # Inclure tous les champs du document
+        }
         for hit in response["hits"]["hits"]
-    }
-    
+    ]
+    logging.error(results)
     return results
 
 @app.get("/find_similar_repos/")

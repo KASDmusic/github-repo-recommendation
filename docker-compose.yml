@@ -10,7 +10,7 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false  # Désactive la sécurité pour simplifier
-      - ES_JAVA_OPTS=-Xms2g -Xmx2g  # Allouer 2 Go de mémoire à Elasticsearch
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m  # Allouer 2 Go de mémoire à Elasticsearch
     ports:
       - "9201:9200"
       - "9301:9300"
@@ -48,6 +48,7 @@ services:
       - elasticsearch
       - postgres
       - api_github
+      - api_bdd
     restart: unless-stopped
 
   interface:
@@ -68,7 +69,6 @@ services:
     container_name: api_bdd
     depends_on:
       - elasticsearch
-      - api_nlp
     volumes:
       - ./data/processed/github_repos_with_embeddings.json:/app/data/processed/github_repos_with_embeddings.json
       - ./data/processed/data_part_1.json:/app/data/processed/data_part_1.json

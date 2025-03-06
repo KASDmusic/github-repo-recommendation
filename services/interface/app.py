@@ -6,7 +6,7 @@ def fetch_recommended_repos(username, n):
     # Appel de l'API FastAPI
     response = requests.get(f"http://api_nlp:8000/user_recommendation_full/?user={username}&n={n}")
     if response.status_code == 200:
-        return response.json()
+        return response.json()["recommended_repos"]
     else:
         return []
 
@@ -86,7 +86,7 @@ if st.session_state['repos']:
     for repo in st.session_state['repos']:
         st.markdown(f"<h4><a href='{repo['html_url']}' target='_blank' style='text-decoration: none; color: #1E90FF;'>{repo['full_name']}</a></h4>", unsafe_allow_html=True)
         st.markdown(f"<p style='color: #555;'>{repo['description']}</p>", unsafe_allow_html=True)
-        render_feedback(repo['url'])
+        render_feedback(repo['html_url'])
         st.markdown("---")
 
 st.markdown("""

@@ -62,6 +62,17 @@ services:
       - mon_reseau
     restart: unless-stopped
 
+  interface_admin:
+    build: ./services/interface_admin
+    container_name: interface_admin
+    depends_on:
+      - postgres
+    ports:
+      - "8502:8501"
+    networks:
+      - mon_reseau
+    restart: unless-stopped
+
   api_bdd:
     build:
       context: ./services/api_bdd

@@ -6,7 +6,7 @@ COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Exposer le port de l'API
-EXPOSE 2100
+EXPOSE 8000
 
 COPY . .
 

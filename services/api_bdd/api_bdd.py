@@ -5,7 +5,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from init_bdd import ElasticManager
 from pydantic import BaseModel
 from typing import List
-import random
+from elasticsearch import Elasticsearch
+from typing import List, Dict
 
 import logging
 
@@ -45,6 +46,38 @@ def insert_data(index_name: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+def search_similar_documents(es: Elasticsearch, index_name: str, query_vector: List[float], k: int = 5) -> Dict[str, float]:
+    """
+    Recherche les k documents les plus similaires à un embedding donné dans Elasticsearch.
+    
+    :param es: Instance de connexion à Elasticsearch.
+    :param index_name: Nom de l'index Elasticsearch.
+    :param query_vector: Vecteur de requête pour la recherche de similarité.
+    :param k: Nombre de documents les plus proches à retourner.
+    :return: Dictionnaire avec les documents et leur score de similarité.
+    """
+    query = {
+        "size": k,
+        "query": {
+            "script_score": {
+                "query": {"match_all": {}},
+                "script": {
+                    "source": "cosineSimilarity(params.query_vector, 'repository_vector') + 1.0",
+                    "params": {"query_vector": query_vector}
+                }
+            }
+        }
+    }
+    
+    response = es.search(index=index_name, body=query)
+    
+    results = {
+        hit["_source"]["full_name"]: hit["_score"]
+        for hit in response["hits"]["hits"]
+    }
+    
+    return results
+
 @app.get("/find_similar_repos/")
 def find_similar_repos(embedding_str: str, n: int):
     """Calculer la similarité cosinus et retourner les n voisins les plus proches."""
@@ -52,39 +85,12 @@ def find_similar_repos(embedding_str: str, n: int):
         # Convertir l'embedding en liste en enlevant les crochets
         embedding = [float(x) for x in embedding_str.replace('[', '').replace(']', '').split(',')]
 
-        # Convertir l'embedding en numpy array
-        embedding_array = np.array(embedding).reshape(1, -1)
-        
-        # Récupérer tous les embeddings stockés dans Elasticsearch
-        all_repos = ElasticManager.get_all_embeddings()
-        if not all_repos:
-            raise HTTPException(status_code=404, detail="Aucun embedding trouvé dans la base.")
+        # Calculer la similarité cosinus avec Elasticsearch
+        es = Elasticsearch("http://elasticsearch:9200")
+        index_name = "github_repositories"
+        results = search_similar_documents(es, index_name, embedding, k=n)
+        return results
 
-        repo_vectors = [repo['repository_vector'] for repo in all_repos]
-        repo_names = [repo['full_name'] for repo in all_repos]
-
-        # Vérifier que les embeddings sont valides
-        if not repo_vectors:
-            raise HTTPException(status_code=500, detail="Aucune donnée d'embedding récupérée.")
-
-        # Convertir les embeddings en numpy array
-        repo_vectors_array = np.array(repo_vectors)
-
-        # Vérifier la dimension de l'embedding
-        if embedding_array.shape[1] != repo_vectors_array.shape[1]:
-            raise HTTPException(status_code=400, detail="La dimension de l'embedding ne correspond pas aux données stockées.")
-
-        # Calculer la similarité cosinus
-        similarities = cosine_similarity(embedding_array, repo_vectors_array).flatten()
-
-        # Récupérer les indices des n voisins les plus proches
-        n = min(n, len(similarities))  # Éviter les erreurs si n > nombre d'embeddings disponibles
-        similar_indices = similarities.argsort()[-n:][::-1]
-
-        # Construire un dictionnaire avec les noms des repos et leurs scores de similarité
-        similar_repos = {repo_names[idx]: similarities[idx] for idx in similar_indices}
-
-        return {"similar_repos": similar_repos}
 
     except Exception as e:
         logging.error(f"Erreur lors de la recherche de repos similaires: {e}")

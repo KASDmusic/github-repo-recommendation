@@ -125,12 +125,23 @@ class ElasticManager:
         else:
             raise Exception(f"Erreur lors de la récupération des embeddings: {res.text}")
 
-
-
 if __name__ == "__main__":
-    time.sleep(10)  # Attendre que Elasticsearch soit prêt
+    time.sleep(60)  # Attendre que Elasticsearch soit prêt
     #ElasticManager.create_index("github_repositories")
-    #ElasticManager.insert_data("github_repositories", "../app/data/processed/github_repos_with_embeddings.json")
 
+    #Liste de tous vos fichiers JSON
+    json_files = [
+        "../app/data/processed/github_repos_with_embeddings.json",
+        "../app/data/processed/data_part_1.json",
+        "../app/data/processed/data_part_2.json",
+        "../app/data/processed/data_part_3.json",
+        "../app/data/processed/data_part_4.json",
+        "../app/data/processed/data_part_5.json",
+        ]
+
+    #for file_path in json_files:
+         #ElasticManager.insert_data("github_repositories", file_path)
+    # Afficher le dictionnaire de l'index
     print("ça marche")
+
     

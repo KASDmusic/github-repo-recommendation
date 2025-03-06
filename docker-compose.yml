@@ -16,8 +16,12 @@ services:
       - "9301:9300"
     volumes:
       - es_data:/usr/share/elasticsearch/data
-      - ./data/processed/github_repos.json:/app/data/processed/github_repos.json
-      - ./data/processed/github_repos_cleaned.json:/app/data/processed/github_repos_with_embeddings.json
+      - ./data/processed/github_repos_with_embeddings.json:/app/data/processed/github_repos_with_embeddings.json
+      - ./data/processed/data_part_1.json:/app/data/processed/data_part_1.json
+      - ./data/processed/data_part_2.json:/app/data/processed/data_part_2.json
+      - ./data/processed/data_part_3.json:/app/data/processed/data_part_3.json
+      - ./data/processed/data_part_4.json:/app/data/processed/data_part_4.json
+      - ./data/processed/data_part_5.json:/app/data/processed/data_part_5.json
     restart: unless-stopped  # Redémarre automatiquement sauf si manuellement arrêté
     networks:
       - mon_reseau
@@ -66,8 +70,12 @@ services:
       - elasticsearch
       - api_nlp
     volumes:
-      - ./data/processed/github_repos.json:/app/data/processed/github_repos.json
-      - ./data/processed/github_repos_cleaned.json:/app/data/processed/github_repos_with_embeddings.json
+      - ./data/processed/github_repos_with_embeddings.json:/app/data/processed/github_repos_with_embeddings.json
+      - ./data/processed/data_part_1.json:/app/data/processed/data_part_1.json
+      - ./data/processed/data_part_2.json:/app/data/processed/data_part_2.json
+      - ./data/processed/data_part_3.json:/app/data/processed/data_part_3.json
+      - ./data/processed/data_part_4.json:/app/data/processed/data_part_4.json
+      - ./data/processed/data_part_5.json:/app/data/processed/data_part_5.json
     ports:
       - "2100:2100"
     networks:

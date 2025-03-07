@@ -4,6 +4,30 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
+<a target="_blank" href="https://fastapi.tiangolo.com/">
+    <img src="https://img.shields.io/badge/FastAPI-Framework-009688?logo=fastapi" />
+</a>
+
+<a target="_blank" href="https://www.elastic.co/kibana/">
+    <img src="https://img.shields.io/badge/Kibana-Visualization-005571?logo=kibana" />
+</a>
+
+<a target="_blank" href="https://www.elastic.co/elasticsearch/">
+    <img src="https://img.shields.io/badge/Elasticsearch-Search%20Engine-005571?logo=elasticsearch" />
+</a>
+
+<a target="_blank" href="https://streamlit.io/">
+    <img src="https://img.shields.io/badge/Streamlit-Web%20App-FF4B4B?logo=streamlit" />
+</a>
+
+<a target="_blank" href="https://docs.github.com/en/rest">
+    <img src="https://img.shields.io/badge/GitHub%20API-REST%20Interface-181717?logo=github" />
+</a>
+
+<a target="_blank" href="https://spacy.io/">
+    <img src="https://img.shields.io/badge/spaCy-NLP%20Library-09A3D5?logo=spacy" />
+</a>
+
 Le projet consiste en une recommandation de dépôts Github en fonction des stars d'un utilisateur.
 
 Le principe consiste à soumettre un nom d'utilisateur et un nombre de recommandations a l'interface.

@@ -40,6 +40,8 @@ Api_nlp : [http://localhost:8000/](http://localhost:8000/)
 
 Api_github : [http://localhost:8001/](http://localhost:8001/)
 
+## Visuel
+
 ![Description du GIF](docs/Sini.gif)
 
 ## Organisation du projet

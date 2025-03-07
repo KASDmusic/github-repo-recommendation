@@ -22,7 +22,7 @@ Mettre les 5 json dans /data/processed/
 
 Faire 'docker compose up --build'
 
-![Description du GIF](doc/Sini.gif)
+![Description du GIF](docs/Sini.gif)
 
 ## Organisation du projet
 

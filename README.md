@@ -22,6 +22,8 @@ Mettre les 5 json dans /data/processed/
 
 Faire 'docker compose up --build'
 
+![Description du GIF](doc/Sini.gif)
+
 ## Organisation du projet
 
 ```
@@ -73,8 +75,6 @@ Faire 'docker compose up --build'
 │   ├── interface_admin    <- Container of the admin interface for notation vizualisation
 │   │
 │   └── postgres_db        <- Container of the postgres database for the notation
-│
-```
 
 ```
 

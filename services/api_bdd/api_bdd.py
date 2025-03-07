@@ -29,22 +29,6 @@ def delete_index(index_name: str):
     result = ElasticManager.delete_index(index_name)
     return result
 
-@app.post("/insert_data/{index_name}")
-def insert_data(index_name: str):
-    """Insérer des données dans Elasticsearch."""
-    try:
-        # Charger les données du fichier JSON
-        json_file_path = '../app/data/processed/updated_repository.json'
-        with open(json_file_path, 'r') as file:
-            data = json.load(file)
-
-        # Insérer uniquement les 10 premières lignes pour tester
-        ElasticManager.insert_data(index_name, data[:10])
-        return {"message": f"Les 10 premières données ont été insérées dans {index_name}."}
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
 
 def search_similar_documents(es: Elasticsearch, index_name: str, query_vector: List[float], k: int = 5) -> List[Dict]:
     """
@@ -78,7 +62,6 @@ def search_similar_documents(es: Elasticsearch, index_name: str, query_vector: L
         }
         for hit in response["hits"]["hits"]
     ]
-    logging.error(results)
     return results
 
 @app.get("/find_similar_repos/")

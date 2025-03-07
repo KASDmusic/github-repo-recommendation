@@ -16,8 +16,8 @@ services:
       - "9301:9300"
     volumes:
       - es_data:/usr/share/elasticsearch/data
-      - ./data/processed/github_repos_with_embeddings.json:/app/data/processed/github_repos_with_embeddings.json
-      - ./data/processed/data_part_1.json:/app/data/processed/data_part_1.json
+      - ./data/processed/data_part_0.json:/app/data/processed/data_part_0.json
+      - ./data/processed/data_part_1.json:/app/data/processed/data_part_1.json      
       - ./data/processed/data_part_2.json:/app/data/processed/data_part_2.json
       - ./data/processed/data_part_3.json:/app/data/processed/data_part_3.json
       - ./data/processed/data_part_4.json:/app/data/processed/data_part_4.json
@@ -81,7 +81,7 @@ services:
     depends_on:
       - elasticsearch
     volumes:
-      - ./data/processed/github_repos_with_embeddings.json:/app/data/processed/github_repos_with_embeddings.json
+      - ./data/processed/data_part_0.json:/app/data/processed/data_part_0.json
       - ./data/processed/data_part_1.json:/app/data/processed/data_part_1.json
       - ./data/processed/data_part_2.json:/app/data/processed/data_part_2.json
       - ./data/processed/data_part_3.json:/app/data/processed/data_part_3.json

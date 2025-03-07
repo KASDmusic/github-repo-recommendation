@@ -8,9 +8,6 @@ import math  # Pour gérer math.isnan
 ELASTIC_URL = "http://elasticsearch:9200"
 HEADERS = {"Content-Type": "application/json"}
 
-# Configuration du logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
-
 # Mapping de l'index Elasticsearch
 index_mapping = {
     "mappings": {
@@ -59,7 +56,6 @@ class ElasticManager:
     @staticmethod
     def insert_data(index_name: str, json_file_path: str, chunk_size: int = 100):
         """Insère les repositories avec un identifiant personnalisé dans Elasticsearch."""
-        logging.info("Début de l'insertion des données.")
 
         try:
             with open(json_file_path, 'r') as file:

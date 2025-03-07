@@ -121,12 +121,9 @@ def description_to_vec(description: str):
     # Nettoyage des données en ne prenant que les caractères alphabétiques
     description = ''.join(e for e in description if e.isalnum() or e.isspace())
 
-    logging.error(f"Description à traiter : {description}")
     # Traduis en anglais
     description_en = GoogleTranslator(source='auto', target='en').translate(description)
-    logging.error(f"Description traduite : {description_en}")
     description_en_nlp = nlp(description_en)
-    logging.error(f"Description tokenisée : {description_en_nlp}")
     # Tokenisation, suppression des mots vides et de la ponctuation
     tokens = [token.lemma_.lower() for token in description_en_nlp 
               if token.text not in STOP_WORDS 
@@ -158,21 +155,17 @@ def cluster_repos_auto_impl(repos: List[Repo], max_k: int = 10) -> dict:
       - Teste différents nombres de clusters (de 2 à max_k) et sélectionne celui qui maximise le score de silhouette.
       - Effectue le clustering avec le k optimal et retourne les centres de clusters ainsi que les dépôts regroupés.
     """
-    logging.error(f"Clustering automatique de {len(repos)} dépôts...")
     vectors = []
     valid_repos = []
     # Boucle sur les repos pour obtenir les vecteurs de description av
     for repo in repos:
         if repo.description:
-            logging.error(f"Traitement de la description pour {repo.full_name}...")
             vec = description_to_vec(repo.description)
-            logging.error(f"Vecteur obtenu pour {repo.full_name}.")
             vectors.append(vec)
             valid_repos.append(repo)
     
     if not vectors:
         raise ValueError("Aucune description valide trouvée dans les dépôts.")
-    logging.error(f"Vecteurs de description obtenus pour {len(vectors)} dépôts.")
     vectors = np.array(vectors)
     
     # Si on a moins de 2 dépôts, pas de clustering possible
@@ -190,7 +183,6 @@ def cluster_repos_auto_impl(repos: List[Repo], max_k: int = 10) -> dict:
     best_k = 2
     best_score = -1
     # Tester pour k variant de 2 à max_possible_k
-    logging.error(f"Recherche du meilleur k pour le clustering (max_k={max_possible_k})...")
     for k in range(2, max_possible_k + 1):
         kmeans = KMeans(n_clusters=k, random_state=42).fit(vectors)
         labels = kmeans.labels_
@@ -204,17 +196,14 @@ def cluster_repos_auto_impl(repos: List[Repo], max_k: int = 10) -> dict:
             best_k = k
 
     # Clustering final avec le k optimal
-    logging.error(f"Clustering final avec k={best_k}...")
     final_kmeans = KMeans(n_clusters=best_k, random_state=42).fit(vectors)
     final_labels = final_kmeans.labels_
     centers = final_kmeans.cluster_centers_
     
     # Regroupement des dépôts par cluster
-    logging.error("Regroupement des dépôts par cluster...")
     clusters = {}
     for label, repo in zip(final_labels, valid_repos):
         clusters.setdefault(int(label), []).append(repo.dict())
-    logging.error(f"Regroupement terminé en {best_k} clusters.")
     return {
         "cluster_centers": centers.tolist(),
         "clusters": clusters,

@@ -34,8 +34,10 @@ services:
     ports:
       - "5602:5601"
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9201
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     restart: unless-stopped
+    networks:
+      - mon_reseau
     
   api_nlp:
     build: ./services/api_nlp

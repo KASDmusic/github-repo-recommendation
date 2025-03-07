@@ -22,6 +22,24 @@ Mettre les 5 json dans /data/processed/
 
 Faire 'docker compose up --build'
 
+## Lien d'accès aux applications une fois lancé
+
+Interface utilisateur : [http://localhost:8501/](http://localhost:8501/)
+
+Interface administrateur : [http://localhost:8502/](http://localhost:8502/)
+
+Kibana : [http://localhost:5602/](http://localhost:5602/)
+
+Elastic search : [http://localhost:9201/](http://localhost:9201/)
+
+PostgreSQL : [http://localhost:5432/](http://localhost:5432/)
+
+Api_bdd : [http://localhost:2100/](http://localhost:2100/)
+
+Api_nlp : [http://localhost:8000/](http://localhost:8000/)
+
+Api_github : [http://localhost:8001/](http://localhost:8001/)
+
 ![Description du GIF](docs/Sini.gif)
 
 ## Organisation du projet

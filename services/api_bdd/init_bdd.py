@@ -123,21 +123,28 @@ class ElasticManager:
 
 if __name__ == "__main__":
     time.sleep(45)  # Attendre que Elasticsearch soit prêt
-    #ElasticManager.create_index("github_repositories")
 
-    #Liste de tous vos fichiers JSON
-    json_files = [
-        "../app/data/processed/github_repos_with_embeddings.json",
-        "../app/data/processed/data_part_1.json",
-        "../app/data/processed/data_part_2.json",
-        "../app/data/processed/data_part_3.json",
-        "../app/data/processed/data_part_4.json",
-        "../app/data/processed/data_part_5.json",
-        ]
+    # Vérifier si l'index existe
+    response = requests.get(f"{ELASTIC_URL}/github_repositories")
+    if response.status_code == 200:
+        print("L'index existe déjà.")
+    else:
+        ElasticManager.create_index("github_repositories")
 
-    #for file_path in json_files:
-         #ElasticManager.insert_data("github_repositories", file_path)
-    # Afficher le dictionnaire de l'index
+        #Liste de tous vos fichiers JSON
+        json_files = [
+            "../app/data/processed/data_part_0.json",
+            "../app/data/processed/data_part_1.json",
+            "../app/data/processed/data_part_2.json",
+            "../app/data/processed/data_part_3.json",
+            "../app/data/processed/data_part_4.json",
+            "../app/data/processed/data_part_5.json",
+            ]
+
+        for file_path in json_files:
+            ElasticManager.insert_data("github_repositories", file_path)
+
+        # Afficher le dictionnaire de l'index
     print("ça marche")
 
     

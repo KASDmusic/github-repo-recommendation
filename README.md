@@ -76,7 +76,3 @@ Faire 'docker compose up --build'
 │   │
 │   └── postgres_db        <- Container of the postgres database for the notation
 
-```
-
---------
-

@@ -28,6 +28,8 @@
     <img src="https://img.shields.io/badge/spaCy-NLP%20Library-09A3D5?logo=spacy" />
 </a>
 
+![Description du GIF](docs/Sini.gif)
+
 Le projet consiste en une recommandation de dépôts Github en fonction des stars d'un utilisateur.
 
 Le principe consiste à soumettre un nom d'utilisateur et un nombre de recommandations a l'interface.
@@ -63,10 +65,6 @@ Api_bdd : [http://localhost:2100/](http://localhost:2100/)
 Api_nlp : [http://localhost:8000/](http://localhost:8000/)
 
 Api_github : [http://localhost:8001/](http://localhost:8001/)
-
-## Visuel
-
-![Description du GIF](docs/Sini.gif)
 
 ## Organisation du projet
 
